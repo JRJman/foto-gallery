@@ -1,18 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\PhotoController;
 
 Route::get('/', function () {
     return app(PhotoController::class)->index();
 })->name('home');
 
-Route::post('/photos', [PhotoController::class, 'store'])->middleware('auth')->name('photos.store');
-
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware('auth')->prefix('photos')->group(function () {
+    Route::get('', [PhotoController::class, 'manage'])->name('dashboard');
+    Route::post('', [PhotoController::class, 'store'])->name('photos.store');
+    Route::delete('/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
+});
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
